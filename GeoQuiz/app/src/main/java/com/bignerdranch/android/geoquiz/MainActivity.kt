@@ -51,6 +51,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         updateButtons()
+        updateScore()
         Log.d(TAG, "onResume() called")
     }
     override fun onPause() {
@@ -83,12 +84,17 @@ class MainActivity : AppCompatActivity() {
         quizViewModel.isAnsweredThis = true
         checkForAllAnswers()
         updateButtons()
+        updateScore()
         Snackbar.make(binding.root, messageResId, Snackbar.LENGTH_SHORT).show()
     }
 
     private fun updateButtons() {
         binding.trueButton.isEnabled = !quizViewModel.isAnsweredThis
         binding.falseButton.isEnabled = !quizViewModel.isAnsweredThis
+    }
+
+    private fun updateScore() {
+        binding.scoreTextView.text = "${quizViewModel.countCorrectAnswers} / ${quizViewModel.numberOfQuestions}"
     }
 
     private fun checkForAllAnswers() {
