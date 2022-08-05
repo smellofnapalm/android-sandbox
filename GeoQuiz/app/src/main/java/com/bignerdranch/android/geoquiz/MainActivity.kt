@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.Toast
+import androidx.activity.viewModels
 import com.bignerdranch.android.geoquiz.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 
@@ -13,23 +14,12 @@ private const val TAG = "MainActivity"
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
-    private val questionBank = listOf(
-        Question(R.string.question_australia, true),
-        Question(R.string.question_oceans, true),
-        Question(R.string.question_mideast, false),
-        Question(R.string.question_africa, false),
-        Question(R.string.question_americas, true),
-        Question(R.string.question_asia, true)
-    )
-
-    private val isAnswered = MutableList(questionBank.size) {false}
-    private val isCorrectAnswered = MutableList(questionBank.size) {false}
-
-    private var currentIndex = 0
+    private val quizViewModel: QuizViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate(Bundle?) called")
+        Log.d(TAG, "Got a QuizViewModel: $quizViewModel")
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -38,13 +28,13 @@ class MainActivity : AppCompatActivity() {
         binding.falseButton.setOnClickListener{ checkAnswer(false) }
 
         binding.nextButton.setOnClickListener {
-            currentIndex = (currentIndex + 1) % questionBank.size
+            quizViewModel.moveToNext()
             updateButtons()
             updateQuestion()
         }
 
         binding.prevButton.setOnClickListener() {
-            currentIndex = (currentIndex - 1 + questionBank.size) % questionBank.size
+            quizViewModel.moveBack()
             updateButtons()
             updateQuestion()
         }
@@ -60,6 +50,7 @@ class MainActivity : AppCompatActivity() {
     }
     override fun onResume() {
         super.onResume()
+        updateButtons()
         Log.d(TAG, "onResume() called")
     }
     override fun onPause() {
@@ -76,34 +67,34 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateQuestion() {
-        val questionTextResId = questionBank[currentIndex].textResId
+        val questionTextResId = quizViewModel.currentQuestionText
         binding.questionTextView.setText(questionTextResId)
     }
 
     private fun checkAnswer(userAnswer: Boolean) {
-        val correctAnswer = questionBank[currentIndex].answer
+        val correctAnswer = quizViewModel.currentQuestionAnswer
         val messageResId = if (userAnswer == correctAnswer) {
             R.string.correct_toast
         }
         else {
             R.string.incorrect_toast
         }
-        isCorrectAnswered[currentIndex] = (userAnswer == correctAnswer)
-        isAnswered[currentIndex] = true
+        quizViewModel.isCorrectAnsweredThis = (userAnswer == correctAnswer)
+        quizViewModel.isAnsweredThis = true
         checkForAllAnswers()
         updateButtons()
         Snackbar.make(binding.root, messageResId, Snackbar.LENGTH_SHORT).show()
     }
 
     private fun updateButtons() {
-        binding.trueButton.isEnabled = !isAnswered[currentIndex]
-        binding.falseButton.isEnabled = !isAnswered[currentIndex]
+        binding.trueButton.isEnabled = !quizViewModel.isAnsweredThis
+        binding.falseButton.isEnabled = !quizViewModel.isAnsweredThis
     }
 
     private fun checkForAllAnswers() {
-        if (isAnswered.all { it }) {
-            val countAnswers = isCorrectAnswered.count{ it }.toDouble()
-            val ratioOfCorrectAnswers = countAnswers / questionBank.size
+        if (quizViewModel.allAnswered) {
+            val countAnswers = quizViewModel.countCorrectAnswers.toDouble()
+            val ratioOfCorrectAnswers = countAnswers / quizViewModel.numberOfQuestions
             Toast.makeText(this, "You have ${(ratioOfCorrectAnswers * 100).format(2)}% of correct answers!", Toast.LENGTH_LONG).show()
         }
     }
