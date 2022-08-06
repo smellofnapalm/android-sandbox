@@ -2,8 +2,6 @@ package com.bignerdranch.android.geoquiz
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.Button
 import android.widget.Toast
 import androidx.activity.viewModels
 import com.bignerdranch.android.geoquiz.databinding.ActivityMainBinding
@@ -18,8 +16,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate(Bundle?) called")
-        Log.d(TAG, "Got a QuizViewModel: $quizViewModel")
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -31,40 +27,25 @@ class MainActivity : AppCompatActivity() {
             quizViewModel.moveToNext()
             updateButtons()
             updateQuestion()
+            updateQuestionNumber()
         }
 
         binding.prevButton.setOnClickListener() {
             quizViewModel.moveBack()
             updateButtons()
             updateQuestion()
+            updateQuestionNumber()
         }
 
         binding.questionTextView.setOnClickListener { binding.nextButton.callOnClick() }
-
-        updateQuestion()
     }
 
-    override fun onStart() {
-        super.onStart()
-        Log.d(TAG, "onStart() called")
-    }
     override fun onResume() {
         super.onResume()
         updateButtons()
         updateScore()
-        Log.d(TAG, "onResume() called")
-    }
-    override fun onPause() {
-        super.onPause()
-        Log.d(TAG, "onPause() called")
-    }
-    override fun onStop() {
-        super.onStop()
-        Log.d(TAG, "onStop() called")
-    }
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "onDestroy() called")
+        updateQuestion()
+        updateQuestionNumber()
     }
 
     private fun updateQuestion() {
@@ -97,13 +78,18 @@ class MainActivity : AppCompatActivity() {
         binding.scoreTextView.text = "${quizViewModel.countCorrectAnswers} / ${quizViewModel.numberOfQuestions}"
     }
 
+    private fun updateQuestionNumber() {
+        binding.indexTextView.text = (quizViewModel.currentIndex + 1).toString()
+    }
+
     private fun checkForAllAnswers() {
+
+        fun Double.format(digits: Int) = "%.${digits}f".format(this)
+
         if (quizViewModel.allAnswered) {
             val countAnswers = quizViewModel.countCorrectAnswers.toDouble()
             val ratioOfCorrectAnswers = countAnswers / quizViewModel.numberOfQuestions
             Toast.makeText(this, "You have ${(ratioOfCorrectAnswers * 100).format(2)}% of correct answers!", Toast.LENGTH_LONG).show()
         }
     }
-
-    private fun Double.format(digits: Int) = "%.${digits}f".format(this)
 }

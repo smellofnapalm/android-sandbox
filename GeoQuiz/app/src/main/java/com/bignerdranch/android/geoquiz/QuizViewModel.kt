@@ -1,10 +1,8 @@
 package com.bignerdranch.android.geoquiz
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 
-private const val TAG = "QuizViewModel"
 const val CURRENT_INDEX_KEY = "CURRENT_INDEX_KEY"
 const val IS_ANSWERED_KEY = "IS_ANSWERED_KEY"
 const val IS_CORRECT_ANSWERED_KEY = "IS_CORRECT_ANSWERED_KEY"
@@ -20,7 +18,7 @@ class QuizViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
         Question(R.string.question_asia, true)
     )
 
-    private var currentIndex: Int
+    var currentIndex: Int
         get() = savedStateHandle[CURRENT_INDEX_KEY] ?: 0
         set(value) { savedStateHandle[CURRENT_INDEX_KEY] = value }
 
