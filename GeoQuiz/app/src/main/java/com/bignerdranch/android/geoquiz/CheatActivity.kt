@@ -4,6 +4,7 @@ import CheatViewModel
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -36,6 +37,8 @@ class CheatActivity : AppCompatActivity() {
             cheatViewModel.cheatButtonPressed = true
             updateCheatingStatus()
         }
+
+        binding.showVersionOfAndroid.text = "API level ${Build.VERSION.SDK_INT}"
     }
 
     private fun setAnswerShownResults(isAnswerShown: Boolean) {
@@ -50,7 +53,7 @@ class CheatActivity : AppCompatActivity() {
         updateCheatingStatus()
     }
 
-    fun updateCheatingStatus() {
+    private fun updateCheatingStatus() {
         setAnswerShownResults(cheatViewModel.cheatButtonPressed)
         binding.answerTextView.setText(cheatViewModel.answerText)
     }

@@ -64,6 +64,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        banCheatingIfLimits()
         updateButtons()
         updateScore()
         updateQuestion()
@@ -112,6 +113,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateQuestionNumber() {
         binding.indexTextView.text = (quizViewModel.currentIndex + 1).toString()
+    }
+
+    private fun banCheatingIfLimits() {
+        if (quizViewModel.isCheatLimitBeaten()) {
+            quizViewModel.banCheating()
+            Toast.makeText(this, "You have already made ${quizViewModel.cheatLimit} cheatings! Now you have to play fare!", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun checkForAllAnswers() {

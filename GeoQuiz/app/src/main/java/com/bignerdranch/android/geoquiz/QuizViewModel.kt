@@ -27,8 +27,12 @@ class QuizViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
         get() = savedStateHandle[IS_ANSWERED_KEY] ?: field
     private val isCorrectAnswered = MutableList(questionBank.size) {false}
         get() = savedStateHandle[IS_CORRECT_ANSWERED_KEY] ?: field
-    private val isCheater = MutableList(questionBank.size) {false}
+    private var isCheater = MutableList(questionBank.size) {false}
         get() = savedStateHandle[IS_CHEATER_KEY] ?: field
+        set(value) {
+            field = value
+            savedStateHandle[IS_CHEATER_KEY] = field
+        }
 
     val currentQuestionAnswer: Boolean
         get() = questionBank[currentIndex].answer
@@ -66,5 +70,14 @@ class QuizViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
             isCheater[currentIndex] = value
             savedStateHandle[IS_CHEATER_KEY] = isCheater
         }
+
+    val cheatLimit = 3
+    val countCheetings: Int
+        get() = isCheater.count { it }
+
+    fun isCheatLimitBeaten() = (countCheetings >= cheatLimit)
+    fun banCheating() {
+        isCheater = MutableList<Boolean>(questionBank.size) {true}
+    }
 
 }
