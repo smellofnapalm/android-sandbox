@@ -1,20 +1,22 @@
 package com.bignerdranch.android.geoquiz
 
+import CheatViewModel
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.viewModels
 import com.bignerdranch.android.geoquiz.databinding.ActivityCheatBinding
 
 const val EXTRA_ANSWER_SHOWN = "com.bignerdranch.android.geoquiz.answer_shown"
-
-private const val EXTRA_ANSWER_IS_TRUE =
-    "com.bignerdranch.android.geoquiz.answer_is_true"
+private const val EXTRA_ANSWER_IS_TRUE = "com.bignerdranch.android.geoquiz.answer_is_true"
 
 class CheatActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCheatBinding
+
+    private val cheatViewModel : CheatViewModel by viewModels()
 
     private var answerIsTrue = false
 
@@ -27,12 +29,12 @@ class CheatActivity : AppCompatActivity() {
         answerIsTrue = intent.getBooleanExtra(EXTRA_ANSWER_IS_TRUE, false)
 
         binding.showAnswerButton.setOnClickListener {
-            val answerText = when {
+            cheatViewModel.answerText = when {
                 answerIsTrue -> R.string.true_button
                 else -> R.string.false_button
             }
-            binding.answerTextView.setText(answerText)
-            setAnswerShownResults(true)
+            cheatViewModel.cheatButtonPressed = true
+            updateCheatingStatus()
         }
     }
 
@@ -41,6 +43,16 @@ class CheatActivity : AppCompatActivity() {
             putExtra(EXTRA_ANSWER_SHOWN, isAnswerShown)
         }
         setResult(Activity.RESULT_OK, data)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateCheatingStatus()
+    }
+
+    fun updateCheatingStatus() {
+        setAnswerShownResults(cheatViewModel.cheatButtonPressed)
+        binding.answerTextView.setText(cheatViewModel.answerText)
     }
 
     companion object {
