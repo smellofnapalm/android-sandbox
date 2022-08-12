@@ -7,6 +7,8 @@ const val CURRENT_INDEX_KEY = "CURRENT_INDEX_KEY"
 const val IS_ANSWERED_KEY = "IS_ANSWERED_KEY"
 const val IS_CORRECT_ANSWERED_KEY = "IS_CORRECT_ANSWERED_KEY"
 
+const val IS_CHEATER_KEY = "IS_CHEATER_KEY"
+
 class QuizViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
 
     private val questionBank = listOf(
@@ -57,5 +59,8 @@ class QuizViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
             isCorrectAnswered[currentIndex] = value
             savedStateHandle[IS_CORRECT_ANSWERED_KEY] = isCorrectAnswered
         }
+    var isCheater: Boolean
+        get() = savedStateHandle[IS_CHEATER_KEY] ?: false
+        set(value) { savedStateHandle[IS_CHEATER_KEY] = value }
 
 }
