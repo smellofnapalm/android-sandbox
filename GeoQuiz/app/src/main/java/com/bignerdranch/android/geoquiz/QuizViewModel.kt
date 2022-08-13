@@ -77,7 +77,7 @@ class QuizViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
 
     fun isCheatLimitBeaten() = (countCheetings >= cheatLimit)
     fun banCheating() {
-        isCheater = MutableList<Boolean>(questionBank.size) {true}
+        isCheater = MutableList(questionBank.size) {true}
     }
 
 }

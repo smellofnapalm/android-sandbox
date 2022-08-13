@@ -8,10 +8,11 @@
     tools:context="com.bignerdranch.android.geoquiz.CheatActivity">
 
     <TextView
+        android:id="@+id/cheating_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="24dp"
-        android:text="@string/warning_text"/>
+        tools:text="@string/warning_text"/>
 
     <TextView
         android:id="@+id/answer_text_view"
@@ -25,11 +26,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/show_answer_button"/>
-
-    <TextView
-        android:id="@+id/show_version_of_android"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="Version of Android"/>
 
 </LinearLayout>

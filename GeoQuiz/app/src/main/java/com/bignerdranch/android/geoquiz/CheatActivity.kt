@@ -12,6 +12,7 @@ import com.bignerdranch.android.geoquiz.databinding.ActivityCheatBinding
 
 const val EXTRA_ANSWER_SHOWN = "com.bignerdranch.android.geoquiz.answer_shown"
 private const val EXTRA_ANSWER_IS_TRUE = "com.bignerdranch.android.geoquiz.answer_is_true"
+private const val EXTRA_COUNT_CHEATINGS = "com.bignerdranch.android.geoquiz.count_cheatings"
 
 class CheatActivity : AppCompatActivity() {
 
@@ -21,6 +22,8 @@ class CheatActivity : AppCompatActivity() {
 
     private var answerIsTrue = false
 
+    private var countCheatings = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -28,6 +31,7 @@ class CheatActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         answerIsTrue = intent.getBooleanExtra(EXTRA_ANSWER_IS_TRUE, false)
+        countCheatings = intent.getIntExtra(EXTRA_COUNT_CHEATINGS, 0)
 
         binding.showAnswerButton.setOnClickListener {
             cheatViewModel.answerText = when {
@@ -37,8 +41,6 @@ class CheatActivity : AppCompatActivity() {
             cheatViewModel.cheatButtonPressed = true
             updateCheatingStatus()
         }
-
-        binding.showVersionOfAndroid.text = "API level ${Build.VERSION.SDK_INT}"
     }
 
     private fun setAnswerShownResults(isAnswerShown: Boolean) {
@@ -56,11 +58,20 @@ class CheatActivity : AppCompatActivity() {
     private fun updateCheatingStatus() {
         setAnswerShownResults(cheatViewModel.cheatButtonPressed)
         binding.answerTextView.setText(cheatViewModel.answerText)
+        binding.cheatingTextView.text = when(countCheatings) {
+            0 -> "You haven't cheated yet! And you shouldn't!"
+            1 -> "You have already cheated once! Stop it!"
+            2 -> "You have already cheated twice! Play fare!"
+            else -> "You shouldn't see this message actually"
+        }
     }
 
     companion object {
-        fun newIntent(packageContext: Context, answerIsTrue: Boolean)
-            = Intent(packageContext, CheatActivity::class.java)
-            .apply { putExtra(EXTRA_ANSWER_IS_TRUE, answerIsTrue) }
+        fun newIntent(packageContext: Context, answerIsTrue: Boolean, countCheatings: Int): Intent {
+            return Intent(packageContext, CheatActivity::class.java).apply {
+                putExtra(EXTRA_ANSWER_IS_TRUE, answerIsTrue)
+                putExtra(EXTRA_COUNT_CHEATINGS, countCheatings)
+            }
+        }
     }
 }
